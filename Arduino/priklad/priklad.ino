@@ -15,6 +15,8 @@ void setup() {
 
   zarizeni.nastavPripojeni();
   zarizeni.pripojSe();
+
+  zarizeni.nastavPosluchacePrikazu(posluchacPrikazu);
 }
 
 void loop() {
@@ -28,4 +30,38 @@ void loop() {
     }
     zarizeni.delejPraci();
     delay(10);
+}
+
+int posluchacPrikazu(const char *nazevPrikazu, const unsigned char *data, size_t size, unsigned char **odpoved, size_t *odpovedVelikost, void *uzivatelskaZpetnaVazba)
+{
+    const char *textOdpovedi = "Uspech";
+    int vysledek = 200;
+
+
+    if (strcmp(methodName, "toggleOn") == 0)
+    {
+    //Příkaz pro zapnutí světla
+    //SEM doplnit
+
+
+
+    }
+    else if (strcmp(methodName, "toggleOff") == 0)
+    {
+    //Příkaz pro vypnutí světla
+    //SEM doplnit prikazy:
+
+
+
+    }
+    else
+    {
+        textOdpovedi = "Nenalezeno";
+        vysledek = PRIKAZ_NEEXISTUJE;
+    }
+    *odpovedVelikost = strlen(textOdpovedi);
+    *odpoved = (unsigned char *)malloc(*response_size);
+    strncpy((char *)(*odpoved), textOdpovedi, *odpovedVelikost);
+
+    return result;
 }
