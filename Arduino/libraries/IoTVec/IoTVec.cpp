@@ -219,7 +219,7 @@ void pripojVypisy()
     LogInfo("Vypisovani uspesne pripraveno.");
 }
 
-int porovnejText(char* prvni, char* druhy)
+int porovnejText( const char *prvni, const char* druhy)
 {
 	return strcmp(prvni, druhy);
 }
@@ -241,7 +241,7 @@ void vytvorZpravu(float teplota, float vlhkost, int spinac, char* vystup)
     }
     else
     {
-        root["temperature"] = temperature;
+        root["temperature"] = (int)(temperature*100.0);
     }
 
     if (std::isnan(humidity))
@@ -250,7 +250,7 @@ void vytvorZpravu(float teplota, float vlhkost, int spinac, char* vystup)
     }
     else
     {
-        root["humidity"] = humidity;
+        root["humidity"] = (int)(humidity*100.0);
     }
 
     
@@ -287,21 +287,27 @@ void vytvorZpravu(float teplota, float vlhkost, int spinac, char* vystup)
 	void IoTVec::pripojSenzor()
 	{
 		this->dht.begin();
-		this->roundTemp = this->dht.readTemperature();
-		this->roundHum = this->dht.readHumidity();
+		this->roundTemp = 0;//this->dht.readTemperature();
+		this->roundHum = 0;//this->dht.readHumidity();
 	}
 	
 	float IoTVec::ctiTeplotu()
 	{
+		delay(100);
 		float temp = this->dht.readTemperature();
-		this->roundTemp = this->roundTemp * 0.3 + temp * 0.7;
+		//LogInfo("Teplota: %d", (int)temp);
+		if (temp <= 100) this->roundTemp = this->roundTemp * 0.3f + temp * 0.7f;
+		//LogInfo("TeplotaR: %d", (int)roundTemp);
 		return this->roundTemp;
 	}
 	
 	float IoTVec::ctiVlhkost()
 	{
+		delay(100);
 		float hum = this->dht.readHumidity();
-		this->roundHum = this->roundHum * 0.3 + hum * 0.7;
+		//LogInfo("Vlhkost: %d", (int)hum);
+		if (hum <= 100) this->roundHum = this->roundHum * 0.3f + hum * 0.7f;
+		//LogInfo("VlhkostR: %d", (int)roundHum);
 		return this->roundHum;	
 	}
 	
@@ -382,7 +388,7 @@ void IoTVec::posliZpravu(char *naklad)
     else
     {
         MAP_HANDLE properties = IoTHubMessage_Properties(messageHandle);
-        //LogInfo("Posilam zpravu: %s", buffer);
+        //LogInfo("Posilam zpravu: %s", naklad);
         LogInfo("Posilam zpravu.");
         if (IoTHubClient_LL_SendEventAsync(this->iotHubClientHandle, messageHandle, sendCallback, &(this->messagePending)) != IOTHUB_CLIENT_OK)
         {

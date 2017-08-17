@@ -1,5 +1,4 @@
 #include <IoTVec.h>
-
 //Proměnné platné všude:
 IoTVec zarizeni; //Věc s kterou pracujeme
 
@@ -23,8 +22,26 @@ void loop() {
   if (zarizeni.jeZpravaOdeslana())
     {
         char textZpravy[256];
+
+        //Hodnoty teploměru:
+        float teplota = 0;
+        float vlhkost = 0;
+
+        //Spínač:
+        //když je hodnota 0, tak je spínač uvolněný
+        //když je hodnota 1, tak je spínač zmáčknutý
+        int spinac = zarizeni.ctiTlacitko();
+
         
-        vytvorZpravu(0,0,0,textZpravy);
+        //Zde je příklad toho, jak může vypadat odesílání zprávy
+        //Je třeba doplnit příkazy, které nahradí nuly
+        //SEM doplnit:
+
+        teplota = zarizeni.ctiTeplotu();
+        vlhkost = zarizeni.ctiVlhkost();
+        
+
+        vytvorZpravu(teplota,vlhkost,spinac,textZpravy);
         zarizeni.posliZpravu(textZpravy);
         delay(interval);
     }
@@ -34,34 +51,31 @@ void loop() {
 
 int posluchacPrikazu(const char *nazevPrikazu, const unsigned char *data, size_t size, unsigned char **odpoved, size_t *odpovedVelikost, void *uzivatelskaZpetnaVazba)
 {
-    const char *textOdpovedi = "Uspech";
+    const char *textOdpovedi = "\"Uspech\"";
     int vysledek = 200;
 
 
-    if (strcmp(methodName, "toggleOn") == 0)
+    if (porovnejText(nazevPrikazu, "zapni") == 0)
     {
     //Příkaz pro zapnutí světla
-    //SEM doplnit
-
-
+    //SEM doplnit:
+    
 
     }
-    else if (strcmp(methodName, "toggleOff") == 0)
+    else if (porovnejText(nazevPrikazu, "vypni") == 0)
     {
     //Příkaz pro vypnutí světla
-    //SEM doplnit prikazy:
-
-
+    //SEM doplnit:
+    
 
     }
     else
     {
-        textOdpovedi = "Nenalezeno";
+        textOdpovedi = "\"Nenalezeno\"";
         vysledek = PRIKAZ_NEEXISTUJE;
     }
     *odpovedVelikost = strlen(textOdpovedi);
-    *odpoved = (unsigned char *)malloc(*response_size);
+    *odpoved = (unsigned char *)malloc(*odpovedVelikost);
     strncpy((char *)(*odpoved), textOdpovedi, *odpovedVelikost);
-
-    return result;
+    return vysledek;
 }

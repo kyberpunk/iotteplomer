@@ -23,7 +23,7 @@
 
 void pripojVypisy();
 
-int porovnejText(char *prvni, char* druhy);
+int porovnejText( const char *prvni, const char* druhy);
 
 void vytvorZpravu(float teplota, float vlhkost, int spinac, char* vystup);
 
